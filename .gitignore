@@ -105,3 +105,4 @@ venv.bak/
 
 #dataset
 dataset/flickr30k-images
+dataset/Pickle
