@@ -107,3 +107,6 @@ venv.bak/
 dataset/flickr30k-images
 dataset/Pickle
 dataset/glove
+dataset/model_weights
+/model_weights/1
+/model_weights/2
