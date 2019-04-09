@@ -23,11 +23,30 @@ import numpy as np
 from numpy import array
 import pandas as pd
 import matplotlib.pyplot as plt
+from flask import Flask, json, Response, request, render_template
+from werkzeug import secure_filename
+
+
+app = Flask(__name__)
+UPLOAD_FOLDER = './static'
+app.config['UPLOAD_FOLDER']	= UPLOAD_FOLDER
 # use tf gpu 1.9.0, 1.12.0 gives cudnn version mismatch error
 
+@app.route('/', methods=['GET'])
+def page_home():
+    return render_template('upload.html', uploaded=False)
+file = ''
+# graph = []
+@app.route('/uploader', methods = ['POST'])
+def upload_file():
+    f = request.files['file']
+    global file
+    file = secure_filename(f.filename)
+    f.save(os.path.join(app.config['UPLOAD_FOLDER'], file))
+    return render_template('upload.html', uploaded=True)
+
+
 # check data
-
-
 def load_text_captions(filename):
     file = open(filename, 'r', encoding="ISO-8859-1")
     text = file.read()
@@ -37,8 +56,6 @@ def load_text_captions(filename):
 
 filename = "dataset/30k_captions.txt"
 text_captions = load_text_captions(filename)
-
-# make key:value pairs for filename:5x captions
 
 
 def load_filename_dict(text_captions):
@@ -142,7 +159,6 @@ def load_clean_descriptions(filename, dataset):
             # create list
             if image_id not in descriptions:
                 descriptions[image_id] = list()
-            # wrap description in tokens
             desc = 'startseq ' + ' '.join(image_desc) + ' endseq'
             # store
             descriptions[image_id].append(desc)
@@ -181,38 +197,32 @@ model_new = Model(model.input, model.layers[-2].output)
 def preprocess(image_path):
     # 299x299 needed by the inception v3 model
     img = image.load_img(image_path, target_size=(299, 299))
-    # Convert PIL image to numpy array of 3-dimensions
     x = image.img_to_array(img)
-    # Add one more dimension
     x = np.expand_dims(x, axis=0)
-    # preprocess the images using preprocess_input() from inception module
     x = preprocess_input(x)
     return x
 
 
 # encode image into a vector of size (2048, )
 def encode(image):
-    image = preprocess(image)  # preprocess the image
-    fea_vec = model_new.predict(image)  # Get the encoding vector for the image
-    # reshape from (1, 2048) to (2048, )
+    image = preprocess(image) 
+    fea_vec = model_new.predict(image) 
     fea_vec = np.reshape(fea_vec, fea_vec.shape[1])
     return fea_vec
 
 
 # all the images
 images = 'dataset/flickr30k-images/'
-# Create a list of all image names in the directory
 img = glob.glob(images + '*.jpg')
 
 train_images_file = 'dataset/flickr30k_train.txt'
 train_images = set(open(train_images_file, 'r').read().strip().split('\n'))
 
-# Create a list of all the training images with their full path names
 train_img = []
 
-for i in img:  # img is list of full path names of all images
-    if i[len(images):] in train_images:  # Check if the image belongs to training set
-        train_img.append(i)  # Add it to the list of train images
+for i in img:  
+    if i[len(images):] in train_images: 
+        train_img.append(i) 
 
 
 test_images_file = 'dataset/flickr30k_test.txt'
@@ -221,9 +231,9 @@ test_images = set(open(test_images_file, 'r').read().strip().split('\n'))
 # Create a list of all the test images with their full path names
 test_img = []
 
-for i in img:  # img is list of full path names of all images
-    if i[len(images):] in test_images:  # Check if the image belongs to test set
-        test_img.append(i)  # Add it to the list of test images
+for i in img:  
+    if i[len(images):] in test_images:
+        test_img.append(i) 
 
 
 train_features = load(open("dataset/Pickle/encoded_train_images.pkl", "rb"))
@@ -241,16 +251,12 @@ for w in vocab:
     ix += 1
 vocab_size = len(ixtoword) + 1  # one for appended 0's
 
-# dict desc to list desc
-
 
 def to_lines(descriptions):
     all_desc = list()
     for key in descriptions.keys():
         [all_desc.append(d) for d in descriptions[key]]
     return all_desc
-
-# max len of desc
 
 
 def max_length(descriptions):
@@ -264,7 +270,7 @@ print('Description Length: %d' % max_length)
 
 # Load Glove vectors
 glove_dir = 'dataset/glove'
-embeddings_index = {}  # empty dictionary
+embeddings_index = {} 
 f = open(os.path.join(glove_dir, 'glove.6B.200d.txt'), encoding="utf-8")
 
 for line in f:
@@ -278,14 +284,12 @@ print('Found %s word vectors.' % len(embeddings_index))
 
 embedding_dim = 200
 
-# Get 200-dim dense vector each word in our vocab
 embedding_matrix = np.zeros((vocab_size, embedding_dim))
 
 for word, i in wordtoix.items():
     # if i < max_words:
     embedding_vector = embeddings_index.get(word)
     if embedding_vector is not None:
-        # Words not found in the embedding index will be all zeros
         embedding_matrix[i] = embedding_vector
 
 # image feature extractor model
@@ -304,6 +308,7 @@ outputs = Dense(vocab_size, activation='softmax')(decoder2)
 # merge the two input models
 model = Model(inputs=[inputs1, inputs2], outputs=outputs)
 
+# graph.append(tf.get_default_graph())
 
 print(model.summary())
 
@@ -335,27 +340,37 @@ def greedySearch(photo):
     return final
 
 
-if __name__ == "__main__":
-    import sys
-    image_loc = sys.argv[1]
+@app.route('/generate', methods=['GET'])
+def disp_caption():
+    # global graph
+    # with graph[0].as_default(): 
     from keras.preprocessing import image
-    # image_loc = 'a.jpg'
+    image_loc = f'static/{file}'
     img = image.load_img(image_loc, target_size=(299, 299))
-    # Convert PIL image to numpy array of 3-dimensions
     x = image.img_to_array(img)
-    # Add one more dimension
     x = np.expand_dims(x, axis=0)
-    # preprocess the images using preprocess_input() from inception module
     x = preprocess_input(x)
-    image = x  # preprocess the image
-    fea_vec = model_new.predict(image)  # Get the encoding vector for the image
-    # reshape from (1, 2048) to (2048, )
+    image = x  
+    fea_vec = model_new.predict(image) 
     fea_vec = np.reshape(fea_vec, fea_vec.shape[1])
     image = fea_vec.reshape((1, 2048))
-    x = plt.imread(image_loc)
-    plt.imshow(x)
+    # x = plt.imread(image_loc)
+    # plt.imshow(x)
     caption_pre = greedySearch(image)
     caption = caption_pre.encode().decode("utf-8", errors='ignore')
-    print(caption)
-    plt.xlabel(caption, fontsize=11)
-    plt.show()
+    # return caption
+    return render_template('prediction.html', image_loc=image_loc, caption=caption)
+
+
+
+if __name__ == "__main__":
+    # import sys
+    app.run(threaded=False, debug = False)
+
+    
+
+    # image_loc = sys.argv[1]
+
+    # print(caption)
+    # plt.xlabel(caption, fontsize=11)
+    # plt.show()

@@ -1,0 +1,14 @@
+<html>
+  <body>
+    <form
+      action="http://localhost:5000/uploader"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      <input type="file" name="file" />
+      <input type="submit" />
+    </form>
+    <h5>Uploaded {{ uploaded }}</h5>
+    <a href="http://localhost:5000/generate">generate caption</a>
+  </body>
+</html>
