@@ -1,14 +1,22 @@
 <html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="static/bootstrap.css" />
+  </head>
   <body>
-    <form
-      action="http://localhost:5000/uploader"
-      method="POST"
-      enctype="multipart/form-data"
-    >
-      <input type="file" name="file" />
-      <input type="submit" />
-    </form>
-    <h5>Uploaded {{ uploaded }}</h5>
-    <a href="http://localhost:5000/generate">generate caption</a>
+    <div class="container" style="margin-top: 5%;">
+      <form
+        action="http://localhost:5000/uploader"
+        method="POST"
+        enctype="multipart/form-data"
+      >
+        <input type="file" name="file" />
+        <input type="submit" />
+      </form>
+      <h5>Uploaded {{ uploaded }}</h5>
+      <a href="http://localhost:5000/generate" class="btn btn-primary"
+        >generate caption</a
+      >
+    </div>
+    <script src="static/bootstrap.js"></script>
   </body>
 </html>
