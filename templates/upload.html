@@ -1,19 +1,72 @@
 <html>
   <head>
     <link rel="stylesheet" type="text/css" href="static/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="static/styles.css" />
   </head>
   <body>
-    <div class="container" style="margin-top: 5%;">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">Image Captioner</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" href="#"
+              >Home <span class="sr-only">(current)</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Features</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Pricing</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="area">
+      <ul class="circles">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+      </ul>
+    </div>
+    <div class="container context" style="margin-top: 3%;">
       <form
         action="http://localhost:5000/uploader"
         method="POST"
         enctype="multipart/form-data"
+        style="margin-bottom: 2%"
       >
         <input type="file" name="file" />
-        <input type="submit" />
+        <input class="btn btn-outline-danger" type="submit" />
       </form>
-      <h5>Uploaded {{ uploaded }}</h5>
-      <a href="http://localhost:5000/generate" class="btn btn-primary"
+      <h5 style="margin-bottom: 2%">Uploaded <span style="color:red">{{ uploaded }}<span></h5>
+      <a href="http://localhost:5000/generate" class="btn btn-outline-danger"
         >generate caption</a
       >
     </div>

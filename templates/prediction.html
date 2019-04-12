@@ -1,6 +1,63 @@
 <html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="static/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="static/styles.css" />
+  </head>
   <body>
-    <img src="{{ image_loc }}" width="500" />
-    <h3 style="font-weight: 100;">{{ caption }}</h3>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">Image Captioner</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" href="#"
+              >Home <span class="sr-only">(current)</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Features</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Pricing</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="area">
+      <ul class="circles">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+      </ul>
+    </div>
+    <div class="container context" style="margin-top: 3%;">
+      <img src="{{ image_loc }}" width="500" style="margin-bottom: 2%" />
+      <h3 style="font-weight: 100;">{{ caption }}</h3>
+    </div>
   </body>
 </html>
